@@ -111,13 +111,21 @@ def login():
 	return render_template('login.html' , next_url=next_url)
 
 
-@app.route('/drafts')
+@app.route('/drafts/')
 @login_required
 def drafts():
 	query = Entry.drafts().order_by(Entry.timestamp.desc())
 	return object_list('index.html', query)
 
+@app.route('/<slug>/')
+def detail(slug):
+	if session.get('logged_in'):
+		query = Entry.select()
 
+	else:
+		query = Entry.public()
+	entry = get_object_or_404(query , Entry.slug == slug)
+	return render_template('detail.html', entry=entry)
 
 @app.route('/')
 def index():
